@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium OS Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+menu "Opito SC16IS7XX UART"
+config SC16IS7XX
+	bool "SC16IS7XX Dual UART"
+	default y
+	select I2C
+	help
+	  Enable driver for SC16IS7XX Dual UART.
+
+config SC16IS7XX_INTERRUPT_DRIVEN
+	depends on SC16IS7XX
+	bool "SC16IS7XX Interrupt Driven"
+	default y
+	help 
+		Enable interrupt driven functionality on the 
+		SC16IS7XX Device
+
+
+# for logging levels		
+module = SC16IS7XX
+module-str = Opito sc16is7xx i2c uart
+source "subsys/logging/Kconfig.template.log_config"
+
+
+endmenu
+
+

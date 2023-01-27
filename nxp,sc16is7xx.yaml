@@ -1,0 +1,47 @@
+description: Opito SC16IS7xx I2C DUAL UART
+
+compatible: "nxp,sc16is7xx"
+
+include: [uart-controller.yaml, i2c-device.yaml]
+
+properties:
+    reg:
+      required: true
+
+    reg-shift:
+      type: int
+      required: true
+      description: quantity to shift the register offsets by (3 for the sc16is7xx)
+
+    config:
+      type: int
+      required: false
+      description: |
+        Value of the configuration register
+
+    interrupt-gpios:
+      type: phandle-array
+      required: false
+      description: Interrupt GPIO pin (active-low open-drain)
+
+    num-ports:
+      type: int
+      required: false
+      description: |
+        Number of serial ports on this device. 
+
+    serial-mode:
+      required: false
+      type: string
+      description: |
+        Configures the GPIO for the electrical interface selected
+        Default to RS232 if not specified. This is only available on 
+        the Optio interface as we have wired on SP330E transceiver 
+        to the SC16IS752 GPIOs
+      enum:
+        - "rs232"
+        - "rs485"
+        - "rs422"
+
+
+
