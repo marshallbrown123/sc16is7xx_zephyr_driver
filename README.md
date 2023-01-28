@@ -19,12 +19,7 @@ Add this to your overlay file
 		num-ports = <2>; 
 		serial-mode = "rs232";
 		config = <123>;
-		
-		opito_agd318: opito_agd318_uart{
-			compatible = "opito,opito_agd318_uart";
-			status = "okay";
-			config-string = "*MSG=2";
-			button-gpios = <&feather_header 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; 
+
 		};
 	};
 	
