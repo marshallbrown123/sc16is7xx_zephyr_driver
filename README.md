@@ -2,9 +2,9 @@
 Zephyr driver for the NXP I2C SC16IS7XX dual UART
 
 
-Add something like this to your overlay.
-	
-  opito_uart:sc16is752@48 {
+Add this to your overlay file
+
+	opito_uart:sc16is752@48 {
 		status = "okay";
 		compatible = "nxp,sc16is7xx";
 		reg-shift = < 3 >;
@@ -16,51 +16,45 @@ Add something like this to your overlay.
 		num-ports = <2>; 
 		serial-mode = "rs232";
 		config = <123>;
+		
+		opito_agd318: opito_agd318_uart{
+			compatible = "opito,opito_agd318_uart";
+			status = "okay";
+			config-string = "*MSG=2";
+			button-gpios = <&feather_header 20 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>; 
+		};
 	};
+	
+	
+Then you can use the device as a normal UART like so, (add these functions to main.c or whatever)
+
+	#include "zephyr/drivers/uart.h"
+	void uart_cb(struct device *dev)
+	{
+	    uart_irq_update(dev);
+	    int data_length = 0;
+	    if (uart_irq_rx_ready(dev)) {
+		data_length = uart_fifo_read(dev, uart_buf, sizeof(uart_buf));
+		uart_buf[data_length] = 0;
+			LOG_WRN("Rx from i2c uart %s", uart_buf);
+	    }
+	}
 
 
+	static bool initUART2(){
 
-Here's how you test it. 
+	    if (uart_dev == NULL) {
+		LOG_WRN("Cannot bind %s\n", "opito_uart");
+		return false;
+	    }
+	    uart_irq_callback_set(uart_dev, uart_cb);
+		uart_irq_rx_enable(uart_dev);
+	    return true;
+	}
 
-
-#include "zephyr/drivers/uart.h"
-
-#define FEATHER_UART DT_NODELABEL(opito_uart)
-#if DT_NODE_HAS_STATUS(FEATHER_UART,okay)
-    const struct device *uart_dev = DEVICE_DT_GET(FEATHER_UART);
-#else
-    #error "uart2 device is disabled."
-#endif
-static uint8_t uart_buf[256];
-static const char *poll_data = "This is a POLL test.\r\n";
-
-
-
-
-void uart_cb(struct device *dev)
-{
-    uart_irq_update(dev);
-    int data_length = 0;
-    if (uart_irq_rx_ready(dev)) {
-        data_length = uart_fifo_read(dev, uart_buf, sizeof(uart_buf));
-        uart_buf[data_length] = 0;
-        LOG_WRN("Rx from i2c uart %s", uart_buf);
-    }
-}
-
-static bool initUART2(){
-
-    if (uart_dev == NULL) {
-        LOG_WRN("Cannot bind %s\n", "opito_uart");
-        return false;
-    }
-    uart_irq_callback_set(uart_dev, uart_cb);
-    uart_irq_rx_enable(uart_dev);
-    return true;
-}
-
-void uart2_test(void){
-    initUART2();
-    for (int i = 0; i < strlen(poll_data); i++) {
-        uart_poll_out(uart_dev, poll_data[i]);
-    }
+	void uart2_start(void){
+	    	initUART2();
+		for (int i = 0; i < strlen(poll_data); i++) {
+			uart_poll_out(uart_dev, poll_data[i]);
+		}
+	}
