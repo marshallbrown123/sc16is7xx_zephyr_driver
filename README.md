@@ -25,6 +25,18 @@ Add this to your overlay file
 Then you can use the device as a normal UART like so, (add these functions to main.c or whatever)
 
 	#include "zephyr/drivers/uart.h"
+	
+	#define FEATHER_UART DT_NODELABEL(opito_uart)
+	#if DT_NODE_HAS_STATUS(FEATHER_UART,okay)
+		const struct device *uart_dev = DEVICE_DT_GET(FEATHER_UART);
+	#else
+		#error "uart2 device is disabled."
+	#endif
+	static uint8_t uart_buf[256];
+	static const char *poll_data = "This is a POLL test.\r\n";
+
+	
+	
 	void uart_cb(struct device *dev)
 	{
 	    uart_irq_update(dev);
