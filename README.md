@@ -1,6 +1,9 @@
 # sc16is7xx_zephyr_driver
 Zephyr driver for the NXP I2C SC16IS7XX dual UART
 
+This is a cut and paste driver from the Zephyr 16550 driver (zephyr\drivers\serial\uart_ns16550.c) a few register definitions from the linux kernel (https://github.com/torvalds/linux/blob/master/drivers/tty/serial/sc16is7xx.c) with a few mods to drive the I2C from Zephyr. 
+
+It's a bit messy but hopefully will be enough to get you started, and you can contribute back to make it better for all of us. 
 
 Add this to your overlay file
 
@@ -58,3 +61,7 @@ Then you can use the device as a normal UART like so, (add these functions to ma
 			uart_poll_out(uart_dev, poll_data[i]);
 		}
 	}
+
+
+Currently only supports the first serial port, but should have hooks in there for the second port, without too many issues, Ideally someone will tidy this up and integrate it into the Zephyr mainline code for the benefit of all. 
+
