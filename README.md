@@ -19,8 +19,6 @@ Add this to your overlay file
 		num-ports = <2>; 
 		serial-mode = "rs232";
 		config = <123>;
-
-		};
 	};
 	
 	
